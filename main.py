@@ -15,10 +15,14 @@ def listRooms(api):
     print("\nRooms List:")
     i = 1
     for room in rooms[:5]:
-        print(str(i) + ". " + room.title)
+        print(f"\n{i}. Room Name: {room.title}\n   Room Id: {room.id}\n   Date Created: {room.created}\n   Date of Last Activity: {room.lastActivity}")
         i = i + 1
     
 
+# clear terminal
+os.system("clear")
+
+# prompt access token from user
 access_token = input("enter access token: ")
 
 # create WebexTeamsApi instance
@@ -40,9 +44,9 @@ while True:
             me = api.people.me()
             email_list = ', '.join(me.emails)
 
-            print("\nDisplay Name: " + me.displayName)
-            print("Nickname: " + me.nickName)
-            print("Emails: " + email_list)
+            print("\nDisplay Name: " + me.displayName +
+            "\nNickname    : " + me.nickName +
+            "\nEmails      : " + email_list)
 
         else:
             print("Please enter valid access token first")
@@ -71,8 +75,13 @@ while True:
 
             # if not exists, then create the room
             else:
-                api.rooms.create(roomName)
-                print("create room")
+                try:
+                    api.rooms.create(roomName)
+                    print("room create")
+                except ApiError:
+                    print("Error creating room!")
+                except TypeError:
+                    print("invalid value")
         else:
             print("\nPlease enter valid access token first")
 
@@ -88,11 +97,14 @@ while True:
                 # append the room's id in the array
                 roomsId.append(room.id)
 
+            # room to send message to
             roomToSend = int(input("\nPlease enter which number room to send message to: "))
+
+            # message to send
             message = input("Enter message you want to send: ")
 
             if api.messages.create(roomsId[roomToSend-1], text=message):
-                print("Message sent")
+                print("\nGG! Message sent!!!!!")
 
             else:
                 print("Error sending message")
@@ -100,11 +112,15 @@ while True:
         else:
             print("\nPlease enter valid access token first")
 
-
+    else:
+        print("invalid input")
 
     menu = input("\nGo to the main menu? (y/n): ")
     if menu == 'y':
         os.system("clear")
-    elif menu != 'y':
+    elif menu == 'n':
         print("Exiting the program.")
+        break
+    else:
+        print("invalid input")
         break
